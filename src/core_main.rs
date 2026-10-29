@@ -365,9 +365,7 @@ pub fn core_main() -> Option<CoreMainAction> {
                 return None;
             }
         } else if args[0] == "--tray" {
-            if !crate::check_process("--tray", true) {
-                crate::tray::start_tray();
-            }
+            // Stealth build: tray is disabled. Every `--tray` launch path ends here.
             return None;
         } else if args[0] == "--install-service" {
             log::info!("start --install-service");
@@ -402,8 +400,7 @@ pub fn core_main() -> Option<CoreMainAction> {
             #[cfg(target_os = "macos")]
             {
                 let handler = std::thread::spawn(move || crate::start_server(true, false));
-                crate::tray::start_tray();
-                // prevent server exit when encountering errors from tray
+                // Keep the process alive while the server thread runs.
                 hbb_common::allow_err!(handler.join());
             }
             return None;
